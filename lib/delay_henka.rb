@@ -1,6 +1,5 @@
 require "delay_henka/engine"
 require 'haml'
-require 'pry'
 
 module DelayHenka
 
