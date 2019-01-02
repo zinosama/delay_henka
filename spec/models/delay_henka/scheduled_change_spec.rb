@@ -3,10 +3,16 @@ require 'rails_helper'
 module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
 
-    describe '#schedule' do
+    describe '.schedule' do
       let(:changeable) { Foo.create(attr_chars: 'hello') }
 
       context 'when value does not change,' do
+        it 'converts empty string to nil' do
+          expect{
+            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: ' '}, by_id: 10)
+          }.not_to change{ described_class.count }
+        end
+
         it 'does not create scheduled change' do
           expect{
             described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: nil}, by_id: 10)

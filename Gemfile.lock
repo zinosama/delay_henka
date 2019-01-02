@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    delay_henka (0.1.1)
+    delay_henka (0.2.1)
       haml (= 5.0.4)
       rails (~> 5.2)
       sidekiq (= 5.0.0)
