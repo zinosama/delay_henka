@@ -32,7 +32,7 @@ module DelayHenka
       end
     end
 
-    def replace
+    def replace_change
       update(state: STATES[:REPLACED])
     end
 
