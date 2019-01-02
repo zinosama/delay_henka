@@ -3,23 +3,6 @@ require 'rails_helper'
 module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
 
-    before(:context) do
-      ActiveRecord::Migration.create_table(:delay_henka_foos) do |t|
-        t.string :attr_chars
-        t.integer :attr_int
-      end
-
-      class Foo < ApplicationRecord
-        validates :attr_chars, presence: true
-        validates :attr_int, numericality: { greater_than: 1 }, allow_nil: true
-        after_initialize -> { self.attr_chars ||= 'init' }, if: :new_record?
-      end
-    end
-
-    after(:context) do
-      ActiveRecord::Migration.drop_table(:delay_henka_foos)
-    end
-
     describe '#schedule' do
       let(:changeable) { Foo.create(attr_chars: 'hello') }
 
@@ -108,10 +91,10 @@ module DelayHenka
       end
     end
 
-    describe '#replace' do
+    describe '#replace_change' do
       it 'updates state' do
         record = described_class.create(changeable: Foo.create, submitted_by_id: 10, attribute_name: 'attr_chars')
-        expect{ record.replace }.to change{ record.reload.state }
+        expect{ record.replace_change }.to change{ record.reload.state }
           .from(described_class::STATES[:STAGED])
           .to(described_class::STATES[:REPLACED])
       end

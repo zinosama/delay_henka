@@ -1,5 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
+require 'sidekiq/testing'
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../test/dummy/config/environment', __FILE__)
@@ -52,4 +53,26 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.before(:each) do
+    Sidekiq::Worker.clear_all
+  end
+
+  config.before(:suite) do
+    ActiveRecord::Migration.create_table(:delay_henka_foos) do |t|
+      t.string :attr_chars
+      t.integer :attr_int
+    end
+    module DelayHenka
+      class Foo < ApplicationRecord
+        validates :attr_chars, presence: true
+        validates :attr_int, numericality: { greater_than: 1 }, allow_nil: true
+        after_initialize -> { self.attr_chars ||= 'init' }, if: :new_record?
+      end
+    end
+  end
+
+  config.after(:suite) do
+    ActiveRecord::Migration.drop_table(:delay_henka_foos)
+  end
 end
