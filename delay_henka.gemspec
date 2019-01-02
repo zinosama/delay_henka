@@ -9,14 +9,18 @@ Gem::Specification.new do |s|
   s.version     = DelayHenka::VERSION
   s.authors     = ["zino"]
   s.email       = ["rhu5@u.rochester.edu"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of DelayHenka."
-  s.description = "TODO: Description of DelayHenka."
+  s.homepage    = "https://github.com/zinosama/delay_henka"
+  s.summary     = "Rails engine for scheduled changes"
+  s.description = "ActiveRecord-based engine for scheduled changes"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  s.add_dependency "rails", "~> 5.2.1", ">= 5.2.1.1"
+  s.add_dependency "rails", "~> 5.2"
+  s.add_dependency "haml", '5.0.4'
+  s.add_dependency 'sidekiq'
 
-  s.add_development_dependency "sqlite3"
+  s.add_development_dependency "pg"
+  s.add_development_dependency "pry"
+  s.add_development_dependency 'rspec-rails', '3.7.2'
 end
