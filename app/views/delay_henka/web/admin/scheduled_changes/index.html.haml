@@ -1,0 +1,21 @@
+%h1 Scheduled Changes
+%table.table
+  %thead
+    %tr
+      %th Type
+      %th Id
+      %th Attribute
+      %th State
+      %th Old Value
+      %th New Value
+      %th Submitted By
+  %tbody
+    - @changes.each do |change|
+      %tr
+        %td= change.changeable_type
+        %td= change.changeable_id
+        %td= change.attribute_name
+        %td= change.state
+        %td= change.old_value
+        %td= change.new_value
+        %td= change.submitted_by_id
