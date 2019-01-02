@@ -1,6 +1,8 @@
 # Delay Henka
 
-Rails engine for managing delayed update of attributes. This is built to ensure that important attributes (such as price of a product, for instance) can be updated anytime but will not impact users until a specific time later in the day (maybe 2am in the morning, when it's safe to apply those changes).
+'Henka' is Japanese for 'change'.
+
+`DelayHenka` is a Rails engine for managing delayed update of attributes. This is built to ensure that important attributes (such as price of a product, for instance) can be updated anytime but will not impact users until a specific time later in the day (maybe 2am in the morning, when it's safe to apply those changes).
 
 Granted, there're other strategies with higher level of integrity (such as versioning the resources). This implementation is merely a low-cost solution that solves the problem to a reasonable extent.
 
