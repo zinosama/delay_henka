@@ -59,6 +59,13 @@ apply_scheduled_changes:
   queue: default
 ```
 
+### States of ScheduledChange
+
+* STAGED:     initial state
+* REPLACED:   replaced by another record updating the same attribute
+* COMPLETED:  change is applied successfully
+* ERRORED:    change failed to be applied
+
 ## Installation
 Add this line to your application's Gemfile:
 
@@ -70,6 +77,11 @@ And then execute:
 ```bash
 $ bundle
 ```
+
+## Development
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+Note that a mock AR class - `Foo` - is created dynamically in rails_helper.rb for testing.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
