@@ -26,10 +26,14 @@ module DelayHenka
     end
 
     def apply_change
-      if changeable.update(attribute_name => new_value)
-        update(state: STATES[:COMPLETED])
+      if changeable
+        if changeable.update(attribute_name => new_value)
+          update(state: STATES[:COMPLETED])
+        else
+          update(state: STATES[:ERRORED], error_message: changeable.errors.full_messages.join(', '))
+        end
       else
-        update(state: STATES[:ERRORED], error_message: changeable.errors.full_messages.join(', '))
+        update(state: STATES[:ERRORED], error_message: 'Target record cannot be found')
       end
     end
 
