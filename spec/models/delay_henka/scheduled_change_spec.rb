@@ -95,6 +95,22 @@ module DelayHenka
           expect(changeable.reload.attr_chars).to eq 'hello'
         end
       end
+
+      context 'when target record has been destroyed,' do
+        it 'updates state to errored and sets error message' do
+          record = described_class.create(
+            changeable_type: Foo.name,
+            changeable_id: 321,
+            submitted_by_id: 10,
+            attribute_name: 'attr_chars',
+            old_value: 'hello',
+            new_value: ''
+          )
+          expect{ record.apply_change }
+            .to change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])
+            .and change{ record.error_message }.from(nil).to('Target record cannot be found')
+        end
+      end
     end
 
     describe '#replace_change' do
