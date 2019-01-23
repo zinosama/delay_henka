@@ -3,6 +3,28 @@ require 'rails_helper'
 module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
 
+
+    describe '.cleanup model cast' do
+
+      let(:changeable) { Foo.create(attr_chars: 'hello', attr_int: 10) }
+
+      context 'when changes type not match, need cast to attribute type' do
+        it 'does not create scheduled change' do
+          expect{
+            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: '10'}, by_id: 10)
+          }.not_to change{ described_class.count }
+        end
+
+        it 'creates singular scheduled change' do
+          expect{
+            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: '11'}, by_id: 10)
+          }.to change{ described_class.count }.by(1)
+        end
+
+      end
+    end
+
+
     describe '.schedule' do
       let(:changeable) { Foo.create(attr_chars: 'hello') }
 

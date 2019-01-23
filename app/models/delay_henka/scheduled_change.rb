@@ -19,7 +19,7 @@ module DelayHenka
     def self.schedule(record:, changes:, by_id:)
       changes.each do |attribute, new_val|
         old_val = record.public_send(attribute)
-        cleaned_new_val = cleanup_val(new_val)
+        cleaned_new_val = cleanup_val(record, attribute, new_val)
         next if old_val == cleaned_new_val
         create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: old_val, new_value: cleaned_new_val)
       end
@@ -39,7 +39,8 @@ module DelayHenka
 
     private
 
-    def self.cleanup_val(val)
+    def self.cleanup_val(record, attribute, val)
+      val = record.type_for_attribute(attribute).cast val
       return val unless val.respond_to?(:strip)
       val.strip == '' ? nil : val
     end
