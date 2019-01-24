@@ -3,39 +3,24 @@ require 'rails_helper'
 module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
 
-
-    describe '.cleanup model cast' do
-
-      let(:changeable) { Foo.create(attr_chars: 'hello', attr_int: 10) }
-
-      context 'when changes type not match, need cast to attribute type' do
-        it 'does not create scheduled change' do
+    describe '.schedule' do
+      context 'when value does not change,' do
+        it 'type casts new value' do
+          changeable = Foo.create(attr_chars: 'hello', attr_int: 10)
           expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: '10'}, by_id: 10)
+            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: '10 '}, by_id: 10)
           }.not_to change{ described_class.count }
         end
 
-        it 'creates singular scheduled change' do
-          expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: '11'}, by_id: 10)
-          }.to change{ described_class.count }.by(1)
-        end
-
-      end
-    end
-
-
-    describe '.schedule' do
-      let(:changeable) { Foo.create(attr_chars: 'hello') }
-
-      context 'when value does not change,' do
         it 'converts empty string to nil' do
+          changeable = Foo.create(attr_chars: 'hello')
           expect{
             described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: ' '}, by_id: 10)
           }.not_to change{ described_class.count }
         end
 
         it 'does not create scheduled change' do
+          changeable = Foo.create(attr_chars: 'hello')
           expect{
             described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: nil}, by_id: 10)
           }.not_to change{ described_class.count }
@@ -44,6 +29,7 @@ module DelayHenka
 
       context 'when value changes,' do
         it 'creates singular scheduled change' do
+          changeable = Foo.create(attr_chars: 'hello')
           expect{
             described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: nil}, by_id: 10)
           }.to change{ described_class.count }.by(1)
@@ -57,8 +43,9 @@ module DelayHenka
         end
 
         it 'creates multiple scheduled changes' do
+          changeable = Foo.create(attr_chars: 'hello')
           expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: 12}, by_id: 10)
+            described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10)
           }.to change{ described_class.count }.by(2)
 
           created = described_class.last(2)
@@ -75,7 +62,7 @@ module DelayHenka
               submitted_by_id: 10,
               attribute_name: 'attr_int',
               old_value: nil,
-              new_value: 12,
+              new_value: '12',
             )
           )
         end
