@@ -18,10 +18,11 @@ module DelayHenka
 
     def self.schedule(record:, changes:, by_id:)
       changes.each do |attribute, new_val|
+        old_val = record.public_send(attribute)
         cleaned_new_val = cleanup_val(new_val)
         record.public_send("#{attribute}=", cleaned_new_val)
         next unless record.public_send("#{attribute}_changed?")
-        create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: record.public_send(attribute), new_value: cleaned_new_val)
+        create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: old_val, new_value: cleaned_new_val)
       end
     end
 

@@ -43,7 +43,7 @@ module DelayHenka
         end
 
         it 'creates multiple scheduled changes' do
-          changeable = Foo.create(attr_chars: 'hello')
+          changeable = Foo.create(attr_chars: 'hello ')
           expect{
             described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10)
           }.to change{ described_class.count }.by(2)
@@ -54,7 +54,7 @@ module DelayHenka
               changeable: changeable,
               submitted_by_id: 10,
               attribute_name: 'attr_chars',
-              old_value: 'hello',
+              old_value: 'hello ',
               new_value: 'world',
             ),
             have_attributes(
