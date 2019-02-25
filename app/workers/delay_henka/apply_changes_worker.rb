@@ -5,6 +5,7 @@ module DelayHenka
 
     def perform
       ScheduledChange.staged
+        .where('schedule_at <= ?', Time.current)
         .includes(:changeable)
         .group_by{ |change| [change.changeable_type, change.changeable_id, change.attribute_name] }
         .values

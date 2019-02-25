@@ -12,18 +12,23 @@ module DelayHenka
 
     validates :submitted_by_id, :attribute_name, presence: true
     validates :state, inclusion: { in: STATES.values }
+    before_save :set_default_schedule_at
     after_initialize :set_initial_state, if: :new_record?
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, changes:, by_id:)
+    def self.schedule(record:, changes:, by_id:, schedule_at: nil)
       changes.each do |attribute, new_val|
         old_val = record.public_send(attribute)
         cleaned_new_val = cleanup_val(new_val)
         record.public_send("#{attribute}=", cleaned_new_val)
         next unless record.public_send("#{attribute}_changed?")
-        create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: old_val, new_value: cleaned_new_val)
+        create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: old_val, new_value: cleaned_new_val, schedule_at: schedule_at)
       end
+    end
+
+    def set_default_schedule_at
+      self.schedule_at = Time.current if schedule_at.nil?
     end
 
     def apply_change

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    delay_henka (0.2.4)
+    delay_henka (0.2.5)
       haml (= 5.0.4)
       rails (~> 5.2)
       sidekiq (= 5.0.0)
@@ -159,4 +159,4 @@ DEPENDENCIES
   rspec-rails (= 3.7.2)
 
 BUNDLED WITH
-   1.16.2
+   1.16.6

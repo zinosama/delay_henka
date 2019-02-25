@@ -27,6 +27,16 @@ module DelayHenka
             .and change{ change_2.reload.state }.to(DelayHenka::ScheduledChange::STATES[:COMPLETED])
         end
       end
+
+
+      it 'not updates until current time >= schedule_at' do
+        ScheduledChange.create(changeable: changeable, submitted_by_id: 10, attribute_name: 'attr_chars', old_value: 'hello', new_value: 'world', schedule_at: 3.days.from_now)
+
+        Sidekiq::Testing.inline! do
+          expect{ described_class.perform_async }
+            .to_not change{ changeable.reload.attr_chars }.from('hello')
+        end
+      end
     end
 
   end
