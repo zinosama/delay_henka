@@ -124,7 +124,7 @@ module DelayHenka
 
     describe '#replace_change' do
       it 'updates state' do
-        record = described_class.create(changeable: Foo.create, submitted_by_id: 10, attribute_name: 'attr_chars')
+        record = described_class.create(changeable: Foo.create, submitted_by_id: 10, attribute_name: 'attr_chars', schedule_at: Time.current)
         expect{ record.replace_change }.to change{ record.reload.state }
           .from(described_class::STATES[:STAGED])
           .to(described_class::STATES[:REPLACED])
