@@ -11,8 +11,9 @@ module DelayHenka
     belongs_to :changeable, polymorphic: true
 
     validates :submitted_by_id, :attribute_name, presence: true
+    validates :schedule_at, presence: true, on: :update
     validates :state, inclusion: { in: STATES.values }
-    before_save :set_default_schedule_at
+    before_create :set_default_schedule_at
     after_initialize :set_initial_state, if: :new_record?
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
@@ -25,10 +26,6 @@ module DelayHenka
         next unless record.public_send("#{attribute}_changed?")
         create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: old_val, new_value: cleaned_new_val, schedule_at: schedule_at)
       end
-    end
-
-    def set_default_schedule_at
-      self.schedule_at = Time.current if schedule_at.nil?
     end
 
     def apply_change
@@ -56,6 +53,10 @@ module DelayHenka
 
     def set_initial_state
       self.state ||= STATES[:STAGED]
+    end
+
+    def set_default_schedule_at
+      self.schedule_at ||= Time.current
     end
 
   end
