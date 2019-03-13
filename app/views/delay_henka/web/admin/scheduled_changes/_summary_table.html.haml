@@ -10,6 +10,7 @@
       %th Attribute
       %th Old Value
       %th New Value
+      %th Schedule At
       %th Action
   %tbody
     - scheduled_changes.each do |change|
@@ -17,4 +18,5 @@
         %td= change.attribute_name.humanize
         %td= change.old_value
         %td= change.new_value
+        %td= change.schedule_at
         %td= link_to 'Delete', delay_henka.web_admin_scheduled_change_path(change), method: :delete
