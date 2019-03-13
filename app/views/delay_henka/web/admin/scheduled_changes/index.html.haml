@@ -8,6 +8,7 @@
       %th State
       %th Old Value
       %th New Value
+      %th Schedule At
       %th Submitted By
   %tbody
     - @changes.each do |change|
@@ -18,4 +19,5 @@
         %td= change.state
         %td= change.old_value
         %td= change.new_value
+        %td= change.schedule_at
         %td= change.submitted_by_id
