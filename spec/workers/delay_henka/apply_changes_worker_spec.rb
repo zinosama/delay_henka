@@ -6,6 +6,27 @@ module DelayHenka
     describe '#perform' do
       let!(:changeable){ Foo.create(attr_chars: 'hello') }
 
+      it 'create new record' do
+        changeable_class = DelayHenka::Foo
+        ScheduledChange.create(
+          changeable_type: changeable_class.to_s,
+          submitted_by_id: 10,
+          new_value: {attr_chars: 'hello', attr_int: 10},
+          schedule_at: Time.current,
+          action_type: ScheduledChange::ACTION_TYPES[:CREATE]
+        )
+
+        Sidekiq::Testing.inline! do
+          expect{ described_class.perform_async }
+            .to change{ changeable_class.count }.by(1)
+          created = changeable_class.last
+          expect(created).to have_attributes({
+            attr_chars: 'hello',
+            attr_int: 10
+          })
+        end
+      end
+
       it 'updates state of replaced changes' do
         ScheduledChange.create(changeable: changeable, submitted_by_id: 10, attribute_name: 'attr_chars', old_value: 'hello', new_value: 'world', schedule_at: Time.current)
         ScheduledChange.create(changeable: changeable, submitted_by_id: 10, attribute_name: 'attr_int', old_value: nil, new_value: 5, schedule_at: Time.current)

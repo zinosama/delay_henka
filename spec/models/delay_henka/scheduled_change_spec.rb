@@ -4,8 +4,8 @@
 #
 #  id              :bigint(8)        not null, primary key
 #  changeable_type :string           not null
-#  changeable_id   :integer          not null
-#  attribute_name  :string           not null
+#  changeable_id   :integer
+#  attribute_name  :string
 #  submitted_by_id :integer          not null
 #  state           :string           not null
 #  error_message   :text
@@ -22,7 +22,48 @@ require 'rails_helper'
 module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
 
+    describe '.validation' do
+      it 'validate fail when update but id missing' do
+        record = described_class.new(changeable_type: 'DelayHenka::Foo',
+                                     attribute_name: 'attr_chars',
+                                     old_value: 'hello',
+                                     new_value: 'world',
+                                     schedule_at: Time.current,
+                                     action_type: described_class::ACTION_TYPES[:UPDATE])
+        expect(record.valid?).to eq(false)
+        expect(record.errors[:changeable_id]).to eq(['can\'t be blank'])
+      end
+
+      it 'validate fail when update but attribute_name missing' do
+        record = described_class.new(changeable_type: 'DelayHenka::Foo',
+                                     changeable_id: 1,
+                                     old_value: 'hello',
+                                     new_value: 'world',
+                                     schedule_at: Time.current,
+                                     action_type: described_class::ACTION_TYPES[:UPDATE])
+        expect(record.valid?).to eq(false)
+        expect(record.errors[:attribute_name]).to eq(['can\'t be blank'])
+      end
+    end
+
     describe '.schedule' do
+      it 'create record' do
+        changes = {attr_chars: 'hello', attr_int: 10}
+        changeable = Foo.new(changes)
+        expect{
+            described_class.schedule(record: changeable, changes: changes, by_id: 10)
+          }.to change{ described_class.count }
+        created = described_class.last
+        expect(created).to have_attributes({
+          changeable_type: 'DelayHenka::Foo',
+          changeable_id: nil,
+          old_value: nil,
+          submitted_by_id: 10,
+          new_value: changes.stringify_keys,
+          action_type: described_class::ACTION_TYPES[:CREATE]
+        })
+      end
+
       context 'when value does not change,' do
         it 'type casts new value' do
           changeable = Foo.create(attr_chars: 'hello', attr_int: 10)
@@ -59,6 +100,7 @@ module DelayHenka
           expect(created.attribute_name).to eq 'attr_chars'
           expect(created.old_value).to eq 'hello'
           expect(created.new_value).to eq 'world'
+          expect(created.action_type).to eq described_class::ACTION_TYPES[:UPDATE]
         end
 
         it 'creates multiple scheduled changes' do
@@ -88,6 +130,41 @@ module DelayHenka
       end
     end
 
+    describe '#apply_create' do
+
+      context 'when change is applied successfully,' do
+        it 'updates state to success' do
+          changes = {attr_chars: 'hello', attr_int: 10}
+          record = described_class.create(
+            changeable_type: 'DelayHenka::Foo',
+            submitted_by_id: 10,
+            new_value: changes,
+            schedule_at: Time.current
+          )
+          expect{ record.apply_create }
+            .to change{ DelayHenka::Foo.count }.by(1)
+            .and change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:COMPLETED])
+        end
+      end
+
+      context 'when change failed to apply,' do
+        it 'updates state to errored and sets error message' do
+          changes = {attr_chars: '', attr_int: 10}
+          record = described_class.create(
+            changeable_type: 'DelayHenka::Foo',
+            submitted_by_id: 10,
+            new_value: changes,
+            schedule_at: Time.current
+          )
+          expect{ record.apply_create }
+            .to change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])
+            .and change{ record.error_message }.from(nil).to('Attr chars can\'t be blank')
+        end
+      end
+
+
+    end
+
     describe '#apply_change' do
       let!(:changeable) { Foo.create(attr_chars: 'hello') }
 
@@ -98,9 +175,9 @@ module DelayHenka
             submitted_by_id: 10,
             attribute_name: 'attr_chars',
             old_value: 'hello',
-            new_value: 'world'
+            new_value: 'world',
+            schedule_at: Time.current
           )
-
           expect{ record.apply_change }
             .to change{ changeable.reload.attr_chars }.from('hello').to('world')
             .and change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:COMPLETED])
@@ -114,7 +191,8 @@ module DelayHenka
             submitted_by_id: 10,
             attribute_name: 'attr_chars',
             old_value: 'hello',
-            new_value: ''
+            new_value: '',
+            schedule_at: Time.current
           )
 
           expect{ record.apply_change }
@@ -132,7 +210,8 @@ module DelayHenka
             submitted_by_id: 10,
             attribute_name: 'attr_chars',
             old_value: 'hello',
-            new_value: ''
+            new_value: '',
+            schedule_at: Time.current
           )
           expect{ record.apply_change }
             .to change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])

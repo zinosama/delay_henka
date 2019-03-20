@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_25_140848) do
+ActiveRecord::Schema.define(version: 2019_03_20_232413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "delay_henka_scheduled_changes", force: :cascade do |t|
     t.string "changeable_type", null: false
-    t.integer "changeable_id", null: false
-    t.string "attribute_name", null: false
+    t.integer "changeable_id"
+    t.string "attribute_name"
     t.integer "submitted_by_id", null: false
     t.string "state", null: false
     t.text "error_message"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 2019_02_25_140848) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "schedule_at", null: false
+    t.string "action_type", default: "update", null: false
   end
 
 end
