@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: delay_henka_scheduled_changes
+#
+#  id              :bigint(8)        not null, primary key
+#  changeable_type :string           not null
+#  changeable_id   :integer          not null
+#  attribute_name  :string           not null
+#  submitted_by_id :integer          not null
+#  state           :string           not null
+#  error_message   :text
+#  old_value       :jsonb
+#  new_value       :jsonb
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  schedule_at     :datetime         not null
+#  action_type     :string           default("update"), not null
+#
+
 require 'rails_helper'
 
 module DelayHenka
