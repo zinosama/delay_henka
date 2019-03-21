@@ -43,6 +43,7 @@ module DelayHenka
     scope :staged, -> { where(state: STATES[:STAGED]) }
     scope :update_action, -> { where(action_type: ACTION_TYPES[:UPDATE]) }
     scope :create_action, -> { where(action_type: ACTION_TYPES[:CREATE]) }
+    scope :create_changes, -> (taxable) {DelayHenka::ScheduledChange.where(action_type: ACTION_TYPES[:CREATE]).where("new_value->>'taxable_type' = ? and new_value->>'taxable_id' = ?", taxable.class.to_s, taxable.id.to_s)}
 
     def self.schedule(record:, changes:, by_id:, schedule_at: Time.current)
       if record.new_record?

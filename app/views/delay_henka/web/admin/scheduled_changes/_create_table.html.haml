@@ -1,0 +1,18 @@
+-# This partial is rendered by including application.
+-# Required local variables:
+-#  * scheduled_changes
+-# To render this partial:
+-#  = render 'delay_henka/web/admin/scheduled_changes/create_table', scheduled_changes: @changes
+
+%table.table.table-bordered
+  %thead
+    %tr
+      %th New Value
+      %th Schedule At
+      %th Action
+  %tbody
+    - scheduled_changes.each do |change|
+      %tr
+        %td= change.new_value
+        %td= change.schedule_at
+        %td= link_to 'Delete', delay_henka.web_admin_scheduled_change_path(change), method: :delete
