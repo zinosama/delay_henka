@@ -1,6 +1,7 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 require 'sidekiq/testing'
+require 'keka'
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../test/dummy/config/environment', __FILE__)
@@ -63,6 +64,7 @@ RSpec.configure do |config|
       t.string :attr_chars
       t.integer :attr_int
     end
+
     module DelayHenka
       class Foo < ApplicationRecord
         validates :attr_chars, presence: true

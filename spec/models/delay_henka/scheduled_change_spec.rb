@@ -4,35 +4,22 @@ module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
 
     describe '.schedule' do
-      context 'when value does not change,' do
-        it 'type casts new value' do
-          changeable = Foo.create(attr_chars: 'hello', attr_int: 10)
-          expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: '10 '}, by_id: 10)
-          }.not_to change{ described_class.count }
+      context 'when decided to schedule,' do
+        before do
+          service = instance_double(WhetherSchedule)
+          allow(WhetherSchedule).to receive(:new).and_return(service)
+          allow(service).to receive(:make_decision).with(:attr_chars, 'world').and_return(Keka.ok)
+          allow(service).to receive(:make_decision).with(:attr_int, '12').and_return(Keka.ok)
         end
 
-        it 'converts empty string to nil' do
-          changeable = Foo.create(attr_chars: 'hello')
-          expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: ' '}, by_id: 10)
-          }.not_to change{ described_class.count }
-        end
-
-        it 'does not create scheduled change' do
-          changeable = Foo.create(attr_chars: 'hello')
-          expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'hello', attr_int: nil}, by_id: 10)
-          }.not_to change{ described_class.count }
-        end
-      end
-
-      context 'when value changes,' do
         it 'creates singular scheduled change' do
           changeable = Foo.create(attr_chars: 'hello')
+          output = nil
           expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: nil}, by_id: 10)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: 'world' }, by_id: 10)
           }.to change{ described_class.count }.by(1)
+
+          expect(output).to be_ok
 
           created = described_class.last
           expect(created.changeable).to eq(changeable)
@@ -44,9 +31,12 @@ module DelayHenka
 
         it 'creates multiple scheduled changes' do
           changeable = Foo.create(attr_chars: 'hello ')
+          output = nil
           expect{
-            described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10)
+            output = described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10)
           }.to change{ described_class.count }.by(2)
+
+          expect(output).to be_ok
 
           created = described_class.last(2)
           expect(created).to contain_exactly(
@@ -67,6 +57,52 @@ module DelayHenka
           )
         end
       end
+
+      context 'when there is error,' do
+        before do
+          service = instance_double(WhetherSchedule)
+          allow(WhetherSchedule).to receive(:new).and_return(service)
+          allow(service).to receive(:make_decision).with(:attr_chars, nil)
+            .and_return(Keka.err(:some_record))
+        end
+
+        it 'returns error keka' do
+          changeable = Foo.create(attr_chars: 'hello')
+          output = nil
+          expect{
+            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10)
+          }.not_to change{ described_class.count }
+
+          expect(output).not_to be_ok
+          expect(output.msg).to be :some_record
+        end
+      end
+
+      context 'when there is no error nor change,' do
+        before do
+          service = instance_double(WhetherSchedule)
+          allow(WhetherSchedule).to receive(:new).and_return(service)
+          allow(service).to receive(:make_decision).with(:attr_chars, nil).and_return(Keka.err)
+        end
+
+        it 'returns ok keka' do
+          changeable = Foo.create(attr_chars: 'hello')
+          output = nil
+          expect{
+            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10)
+          }.not_to change{ described_class.count }
+
+          expect(output).to be_ok
+          expect(output.msg).to be_nil
+        end
+      end
+    end
+
+    context '.cleanup_val' do
+      it { expect(described_class.cleanup_val(' foo ')).to eq 'foo' }
+      it { expect(described_class.cleanup_val([:foo])).to eq [:foo] }
+      it { expect(described_class.cleanup_val('')).to be_nil }
+      it { expect(described_class.cleanup_val(nil)).to be_nil }
     end
 
     describe '#apply_change' do
