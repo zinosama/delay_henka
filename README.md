@@ -32,11 +32,17 @@ end
 # In your controller (or factory service),
 class SomeController
   def update
-    product = SomeModel.find(params[:id])
+    @product = SomeModel.find(params[:id])
     delayed_changes = some_params.extract!(:discount_pct, :price)
-    if product.update some_params.except(:discount_pct, :price)
-      DelayHenka::ScheduledChange.schedule(record: product, changes: delayed_changes, by_id: current_user.id)
-      redirect_to #..., success
+    if @product.update some_params.except(:discount_pct, :price)
+      result = DelayHenka::ScheduledChange.schedule(record: @product, changes: delayed_changes, by_id: current_user.id)
+      if result.ok? # returns a Keka object
+        redirect_to #..., success
+      else
+        # no change is scheduled. display error and have user try again.
+        flash.now[:error] = result.msg
+        render :edit
+      end
     else
       render :edit
     end

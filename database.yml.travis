@@ -1,0 +1,6 @@
+test:
+  database: delayed_henka_test
+  port: 5433
+  adapter: postgresql
+  pool: 5
+  timeout: 5000

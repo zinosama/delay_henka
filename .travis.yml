@@ -1,0 +1,22 @@
+sudo: false
+language: ruby
+rvm:
+  - 2.4.3
+env:
+  global:
+    - PGPORT=5433
+addons:
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+  postgresql: 10
+before_install: gem install bundler -v 1.16.2
+before_script:
+  - sudo cp /etc/postgresql/9.4/main/pg_hba.conf /etc/postgresql/10/main/pg_hba.conf
+  - sudo /etc/init.d/postgresql restart
+  - psql -c 'create database delayed_henka_test;' -U postgres
+  - cp database.yml.travis test/dummy/config/database.yml
+  - RAILS_ENV=test bundle exec rails db:migrate
+script:
+  - bundle exec rspec

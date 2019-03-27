@@ -18,12 +18,31 @@ module DelayHenka
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
     def self.schedule(record:, changes:, by_id:, schedule_at: Time.current)
-      changes.each do |attribute, new_val|
-        old_val = record.public_send(attribute)
-        cleaned_new_val = cleanup_val(new_val)
-        record.public_send("#{attribute}=", cleaned_new_val)
-        next unless record.public_send("#{attribute}_changed?")
-        create!(changeable: record, submitted_by_id: by_id, attribute_name: attribute, old_value: old_val, new_value: cleaned_new_val, schedule_at: schedule_at)
+      Keka.run do
+        service = WhetherSchedule.new(record)
+        new_changes = changes.each_with_object([]) do |(attribute, new_val), accum|
+          old_val = record.public_send(attribute)
+          cleaned_new_val = cleanup_val(new_val)
+          decision = service.make_decision(attribute, cleaned_new_val)
+          if decision.ok?
+            accum << new(
+              changeable: record,
+              submitted_by_id: by_id,
+              attribute_name: attribute,
+              old_value: old_val,
+              new_value: cleaned_new_val,
+              schedule_at: schedule_at
+            )
+          elsif decision.msg
+            return decision # error present
+          else
+            # otherwise do nothing - maybe no change is made
+          end
+        end
+
+        transaction do
+          new_changes.each(&:save!)
+        end
       end
     end
 
@@ -47,7 +66,8 @@ module DelayHenka
 
     def self.cleanup_val(val)
       return val unless val.respond_to?(:strip)
-      val.strip == '' ? nil : val
+      stripped = val.strip
+      stripped == '' ? nil : stripped
     end
 
     def set_initial_state
