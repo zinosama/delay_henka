@@ -3,4 +3,7 @@ language: ruby
 rvm:
   - 2.4.3
 before_install: gem install bundler -v 1.16.2
-script: bundle exec rspec
+script:
+  - bundle exec rake db:create
+  - RAILS_ENV=test bundle exec rake db:migrate
+  - bundle exec rspec
