@@ -9,6 +9,8 @@ module DelayHenka
 
       it 'does not change original object' do
         expect{ service.make_decision(:attr_int, 8) }.not_to change{ record.attr_int }.from(10)
+        expect{ service.make_decision(:attr_int, 0.5) }.not_to change{ record.attr_int }.from(10)
+        expect{ service.make_decision(:attr_int, nil) }.not_to change{ record.attr_int }.from(10)
       end
 
       it 'returns err keka without msg when there is no change' do
