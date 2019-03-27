@@ -2,10 +2,12 @@ sudo: false
 language: ruby
 rvm:
   - 2.4.3
-services:
-  - postgresql
 addons:
   postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
 before_install: gem install bundler -v 1.16.2
 script:
   - bundle exec rake db:create
