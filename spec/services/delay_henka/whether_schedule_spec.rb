@@ -24,7 +24,7 @@ module DelayHenka
         expect(record.attr_int).to eq 10
 
         expect(output).not_to be_ok
-        expect(output.msg.attr_int).to eq 0
+        expect(output.msg).to eq 'Attr int must be greater than 1'
       end
 
       it 'returns ok keka when new val is valid' do

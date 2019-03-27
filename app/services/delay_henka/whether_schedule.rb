@@ -13,7 +13,7 @@ module DelayHenka
         # can't use xxx_changed? because #dup gives us a new instance
         Keka.err_if! old_val == record.public_send(attribute)
         Keka.ok_if! record.valid?
-        Keka.err_if! true, record
+        Keka.err_if! true, record.errors.full_messages.join(', ')
       end
     end
 
