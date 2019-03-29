@@ -67,7 +67,7 @@ RSpec.configure do |config|
 
     module DelayHenka
       class Foo < ApplicationRecord
-        validates :attr_chars, presence: true
+        validates :attr_chars, presence: true, uniqueness: true
         validates :attr_int, numericality: { greater_than: 1 }, allow_nil: true
         after_initialize -> { self.attr_chars ||= 'init' }, if: :new_record?
       end
