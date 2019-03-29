@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    delay_henka (0.3.1)
+    delay_henka (0.3.2)
       haml (= 5.0.4)
       keka
       rails (~> 5.2)
