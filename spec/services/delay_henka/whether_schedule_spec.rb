@@ -13,6 +13,12 @@ module DelayHenka
         expect{ service.make_decision(:attr_int, nil) }.not_to change{ record.attr_int }.from(10)
       end
 
+      it 'does not returns err when have uniq column' do
+        output = service.make_decision(:attr_int, 7)
+        expect(output).to be_ok
+        expect(output.msg).to be_nil
+      end
+
       it 'returns err keka without msg when there is no change' do
         output = service.make_decision(:attr_int, 10)
         expect(output).not_to be_ok
