@@ -6,10 +6,9 @@ module DelayHenka
     end
 
     def make_decision(attribute, new_val)
-      result = evaluate_decision(attribute, new_val)
-      # restore attributes
-      @record.restore_attributes
-      result
+      evaluate_decision(attribute, new_val).tap do
+        @record.restore_attributes
+      end
     end
 
     def evaluate_decision(attribute, new_val)
