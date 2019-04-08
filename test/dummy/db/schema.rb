@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_25_140848) do
+ActiveRecord::Schema.define(version: 2019_04_08_130947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "delay_henka_scheduled_actions", force: :cascade do |t|
+    t.string "actionable_type", null: false
+    t.bigint "actionable_id", null: false
+    t.string "method_name"
+    t.text "arguments", default: [], array: true
+    t.string "state", null: false
+    t.string "error_message"
+    t.integer "submitted_by_id", null: false
+    t.datetime "schedule_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actionable_type", "actionable_id"], name: "actionable_index"
+    t.index ["schedule_at"], name: "index_delay_henka_scheduled_actions_on_schedule_at"
+    t.index ["state"], name: "index_delay_henka_scheduled_actions_on_state"
+  end
 
   create_table "delay_henka_scheduled_changes", force: :cascade do |t|
     t.string "changeable_type", null: false
