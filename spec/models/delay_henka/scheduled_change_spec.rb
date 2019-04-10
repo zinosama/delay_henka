@@ -110,50 +110,57 @@ module DelayHenka
 
       context 'when change is applied successfully,' do
         it 'updates state to success' do
-          record = described_class.create(
+          record = described_class.create!(
             changeable: changeable,
             submitted_by_id: 10,
             attribute_name: 'attr_chars',
             old_value: 'hello',
-            new_value: 'world'
+            new_value: 'world',
+            schedule_at: Time.current
           )
 
           expect{ record.apply_change }
             .to change{ changeable.reload.attr_chars }.from('hello').to('world')
-            .and change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:COMPLETED])
+            .and change{ record.reload.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:COMPLETED])
         end
       end
 
       context 'when change failed to apply,' do
         it 'updates state to errored and sets error message' do
-          record = described_class.create(
+          record = described_class.create!(
             changeable: changeable,
             submitted_by_id: 10,
             attribute_name: 'attr_chars',
             old_value: 'hello',
-            new_value: ''
+            new_value: '',
+            schedule_at: Time.current
           )
 
           expect{ record.apply_change }
-            .to change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])
-            .and change{ record.error_message }.from(nil).to('Attr chars can\'t be blank')
+            .to change{ record.reload.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])
+            .and change{ record.reload.error_message }.from(nil).to('Attr chars can\'t be blank')
           expect(changeable.reload.attr_chars).to eq 'hello'
         end
       end
 
       context 'when target record has been destroyed,' do
-        it 'updates state to errored and sets error message' do
-          record = described_class.create(
-            changeable_type: Foo.name,
-            changeable_id: 321,
+        let!(:changeable) { Foo.create(attr_chars: 'hello') }
+        let!(:record) do
+          described_class.create!(
+            changeable: changeable,
             submitted_by_id: 10,
             attribute_name: 'attr_chars',
             old_value: 'hello',
-            new_value: ''
+            new_value: '',
+            schedule_at: Time.current
           )
+        end
+
+        it 'updates state to errored and sets error message' do
+          changeable.destroy!
           expect{ record.apply_change }
-            .to change{ record.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])
-            .and change{ record.error_message }.from(nil).to('Target record cannot be found')
+            .to change{ record.reload.state }.from(described_class::STATES[:STAGED]).to(described_class::STATES[:ERRORED])
+            .and change{ record.reload.error_message }.from(nil).to('Target record cannot be found')
         end
       end
     end
