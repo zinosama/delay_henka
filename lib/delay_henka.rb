@@ -10,6 +10,11 @@ module DelayHenka
         ->{ staged.order('created_at DESC') },
         class_name: 'DelayHenka::ScheduledChange',
         as: :changeable
+
+      has_many :upcoming_actions,
+        ->{ staged.order('created_at DESC') },
+        class_name: 'DelayHenka::ScheduledAction',
+        as: :actionable
     end
   end
 

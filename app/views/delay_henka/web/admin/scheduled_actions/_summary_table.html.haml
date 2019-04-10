@@ -1,0 +1,20 @@
+-# This partial is rendered by including application.
+-# Required local variables:
+-#  * scheduled_actions
+-# To render this partial:
+-#  = render 'delay_henka/web/admin/scheduled_actions/summary_table', scheduled_actions: @actions
+
+%table.table.table-bordered.table-responsive
+  %thead
+    %tr
+      %th Action
+      %th Arguments
+      %th Schedule At
+      %th Action
+  %tbody
+    - scheduled_actions.each do |action|
+      %tr
+        %td= action.method_name
+        %td= action.argument
+        %td= action.schedule_at
+        %td= link_to 'Delete', delay_henka.web_admin_scheduled_action_path(action), method: :delete

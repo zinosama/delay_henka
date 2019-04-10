@@ -1,0 +1,23 @@
+%h1 Scheduled Actions
+%table.table
+  %thead
+    %tr
+      %th Type
+      %th Id
+      %th Method
+      %th Argument
+      %th State
+      %th Return Value
+      %th Schedule At
+      %th Submitted By
+  %tbody
+    - @actions.each do |action|
+      %tr
+        %td= action.actionable_type
+        %td= action.actionable_id
+        %td= action.method_name
+        %td= action.argument
+        %td= action.state
+        %td= action.return_value
+        %td= action.schedule_at
+        %td= action.submitted_by_id
