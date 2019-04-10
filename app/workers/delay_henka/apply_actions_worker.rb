@@ -7,9 +7,7 @@ module DelayHenka
       ScheduledAction.staged
         .where('schedule_at <= ?', Time.current)
         .includes(:actionable)
-        .find_each do |scheduled_action|
-          scheduled_action.apply_action
-        end
+        .find_each(&:apply_action)
     end
 
   end
