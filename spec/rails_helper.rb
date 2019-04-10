@@ -70,6 +70,16 @@ RSpec.configure do |config|
         validates :attr_chars, presence: true, uniqueness: true
         validates :attr_int, numericality: { greater_than: 1 }, allow_nil: true
         after_initialize -> { self.attr_chars ||= 'init' }, if: :new_record?
+
+        def no_arity
+        end
+
+        def single_arity(arg)
+        end
+
+        def err_action(arg)
+          raise "#{arg['some_arg']} raised an exception"
+        end
       end
     end
   end
