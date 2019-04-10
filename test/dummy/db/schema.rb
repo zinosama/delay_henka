@@ -18,12 +18,13 @@ ActiveRecord::Schema.define(version: 2019_04_08_130947) do
   create_table "delay_henka_scheduled_actions", force: :cascade do |t|
     t.string "actionable_type", null: false
     t.bigint "actionable_id", null: false
-    t.string "method_name"
-    t.text "arguments", default: [], array: true
+    t.string "method_name", null: false
     t.string "state", null: false
     t.string "error_message"
     t.integer "submitted_by_id", null: false
-    t.datetime "schedule_at"
+    t.datetime "schedule_at", null: false
+    t.jsonb "argument"
+    t.jsonb "return_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["actionable_type", "actionable_id"], name: "actionable_index"
