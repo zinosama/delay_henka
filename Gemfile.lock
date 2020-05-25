@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    delay_henka (0.5.2)
-      haml (~> 5)
+    delay_henka (0.5.3)
+      haml (> 5)
       keka
       rails (> 5.2)
-      sidekiq (~> 5)
+      sidekiq (> 5)
 
 GEM
   remote: https://rubygems.org/
@@ -134,11 +134,11 @@ GEM
       rspec-mocks (~> 3.7.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
-    sidekiq (5.2.8)
-      connection_pool (~> 2.2, >= 2.2.2)
-      rack (< 2.1.0)
-      rack-protection (>= 1.5.0)
-      redis (>= 3.3.5, < 5)
+    sidekiq (6.0.7)
+      connection_pool (>= 2.2.2)
+      rack (~> 2.0)
+      rack-protection (>= 2.0.0)
+      redis (>= 4.1.0)
     sprockets (4.0.0)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
