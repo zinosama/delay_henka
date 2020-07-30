@@ -1,4 +1,5 @@
-$:.push File.expand_path("lib", __dir__)
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 # Maintain your gem's version:
 require "delay_henka/version"
@@ -7,14 +8,25 @@ require "delay_henka/version"
 Gem::Specification.new do |s|
   s.name        = "delay_henka"
   s.version     = DelayHenka::VERSION
-  s.authors     = ["zino"]
-  s.email       = ["rhu5@u.rochester.edu"]
-  s.homepage    = "https://github.com/zinosama/delay_henka"
+  s.authors     = ["Chowbus"]
+  s.email       = ["engineering@chowbus.com"]
+
+  s.homepage    = "https://github.com/FanTuanEats/delay_henka"
   s.summary     = "Rails engine for scheduled changes"
   s.description = "ActiveRecord-based engine for scheduled changes"
-  s.license     = "MIT"
+  s.license     = "proprietary"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  # Specify which files should be added to the gem when it is released.
+  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
+  spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
+    `git ls-files -z`.split("\x0").reject do |f|
+      # include all factories in the build
+      f.match(%r{^(test|spec|features)/})
+    end
+  end
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
 
   s.add_dependency 'rails', '> 5.2'
   s.add_dependency 'haml', '> 5'

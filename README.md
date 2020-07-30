@@ -84,10 +84,13 @@ And then execute:
 $ bundle
 ```
 
-## Development
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Release Process
 
-Note that a mock AR class - `Foo` - is created dynamically in rails_helper.rb for testing.
+PREREQUISITE: Access to Gemfury
 
-## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+1. Create a new release branch off of master. A good release branch might be `release-v0.2.0`.
+2. Bump the version in `version.rb`, `Gemfile.lock`. Move the description in `CHANGELOG.md` under its own heading.
+3. Create PR for these changes. Merge PR with approval.
+4. Create a tag for your version (on branch master). Ex: `git tag -a v0.2.0 -m 'v0.2.0'`.
+5. Push tag: `git push --tags`
+6. Push to gemfury: `git push fury master` (If you haven’t yet done so, you may need to add the gemfury remote: `git remote add fury https://<your_account>@git.fury.io/chowbus/<package-name>.git`)
