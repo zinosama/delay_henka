@@ -17,7 +17,7 @@ module DelayHenka
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, changes:, by_id:, schedule_at: Time.current)
+    def self.schedule(record:, changes:, by_id:, schedule_at: Time.current, time_zone: nil)
       Keka.run do
         service = WhetherSchedule.new(record)
         new_changes = changes.each_with_object([]) do |(attribute, new_val), accum|
@@ -31,7 +31,8 @@ module DelayHenka
               attribute_name: attribute,
               old_value: old_val,
               new_value: cleaned_new_val,
-              schedule_at: schedule_at
+              schedule_at: schedule_at,
+              time_zone: time_zone
             )
           elsif decision.msg
             return decision # error present

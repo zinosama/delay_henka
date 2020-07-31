@@ -10,6 +10,7 @@
       %th Action
       %th Arguments
       %th Schedule At
+      %th Time Zone
       %th Action
   %tbody
     - scheduled_actions.each do |action|
@@ -17,4 +18,5 @@
         %td= action.method_name
         %td= action.argument
         %td= action.schedule_at
+        %td= action.time_zone
         %td= link_to 'Delete', delay_henka.web_admin_scheduled_action_path(action), method: :delete
