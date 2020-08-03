@@ -15,7 +15,7 @@ module DelayHenka
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, method_name:, argument: nil, by_id:, schedule_at: Time.current)
+    def self.schedule(record:, method_name:, argument: nil, by_id:, schedule_at: Time.current, time_zone: nil)
       Keka.run do
         begin
           arity = record.method(method_name.to_sym).arity
@@ -25,7 +25,8 @@ module DelayHenka
             method_name: method_name,
             argument: argument.to_json,
             submitted_by_id: by_id,
-            schedule_at: schedule_at
+            schedule_at: schedule_at,
+            time_zone: time_zone
           )
         rescue NameError => e
           Keka.err_if! true, e.message

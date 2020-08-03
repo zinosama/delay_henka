@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_08_130947) do
+ActiveRecord::Schema.define(version: 2020_07_24_150636) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,9 +27,12 @@ ActiveRecord::Schema.define(version: 2019_04_08_130947) do
     t.jsonb "return_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "time_zone"
+    t.integer "service_region_id"
     t.index ["actionable_type", "actionable_id"], name: "actionable_index"
     t.index ["schedule_at"], name: "index_delay_henka_scheduled_actions_on_schedule_at"
     t.index ["state"], name: "index_delay_henka_scheduled_actions_on_state"
+    t.index ["time_zone"], name: "index_delay_henka_scheduled_actions_on_time_zone"
   end
 
   create_table "delay_henka_scheduled_changes", force: :cascade do |t|
@@ -44,6 +47,9 @@ ActiveRecord::Schema.define(version: 2019_04_08_130947) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "schedule_at", null: false
+    t.string "time_zone"
+    t.integer "service_region_id"
+    t.index ["time_zone"], name: "index_delay_henka_scheduled_changes_on_time_zone"
   end
 
 end

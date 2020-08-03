@@ -9,6 +9,7 @@
       %th State
       %th Return Value
       %th Schedule At
+      %th Time Zone
       %th Submitted By
   %tbody
     - @actions.each do |action|
@@ -20,4 +21,5 @@
         %td= action.state
         %td= action.return_value
         %td= action.schedule_at
+        %td= action.time_zone
         %td= action.submitted_by_id

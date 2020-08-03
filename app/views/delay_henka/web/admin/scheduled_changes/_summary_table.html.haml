@@ -11,6 +11,7 @@
       %th Old Value
       %th New Value
       %th Schedule At
+      %th Time Zone
       %th Action
   %tbody
     - scheduled_changes.each do |change|
@@ -19,4 +20,5 @@
         %td= change.old_value
         %td= change.new_value
         %td= change.schedule_at
+        %td= change.time_zone
         %td= link_to 'Delete', delay_henka.web_admin_scheduled_change_path(change), method: :delete
