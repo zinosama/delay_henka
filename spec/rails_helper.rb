@@ -2,7 +2,6 @@
 require 'spec_helper'
 require 'sidekiq/testing'
 require 'keka'
-require 'pry'
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../test/dummy/config/environment', __FILE__)
