@@ -2,6 +2,7 @@
 require 'spec_helper'
 require 'sidekiq/testing'
 require 'keka'
+require 'pry'
 
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../test/dummy/config/environment', __FILE__)
@@ -54,6 +55,9 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # native rails support for manipulating time in tests
+  config.include ActiveSupport::Testing::TimeHelpers
 
   config.before(:each) do
     Sidekiq::Worker.clear_all
