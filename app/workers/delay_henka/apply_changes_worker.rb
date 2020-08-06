@@ -3,9 +3,10 @@ module DelayHenka
 
     include Sidekiq::Worker
 
-    def perform
+    def perform(time_zone)
       ScheduledChange.staged
         .where('schedule_at <= ?', Time.current)
+        .where(time_zone: time_zone)
         .includes(:changeable)
         .group_by{ |change| [change.changeable_type, change.changeable_id, change.attribute_name] }
         .values

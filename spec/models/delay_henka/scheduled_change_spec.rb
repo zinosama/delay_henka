@@ -2,6 +2,31 @@ require 'rails_helper'
 
 module DelayHenka
   RSpec.describe ScheduledChange, type: :model do
+    let(:time_zone) { "Central Time (US & Canada)" }
+
+    describe 'attribues' do
+      let!(:changeable) { Foo.create(attr_chars: 'hello') }
+      let(:record) do
+        described_class.new(
+          changeable: changeable,
+          submitted_by_id: 10,
+          attribute_name: 'attr_chars',
+          old_value: 'hello',
+          new_value: '',
+          schedule_at: Time.current
+        )
+      end
+
+      it 'is invalid without a time_zone' do
+        expect(record).to_not be_valid
+      end
+
+      it 'is valid with a time zone' do
+        record.time_zone = "Central Time (US & Canada)"
+        expect(record).to be_valid
+      end
+    end
+
 
     describe '.schedule' do
       context 'when decided to schedule,' do
@@ -16,7 +41,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: { attr_chars: 'world' }, by_id: 10)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: 'world' }, by_id: 10, time_zone: time_zone)
           }.to change{ described_class.count }.by(1)
 
           expect(output).to be_ok
@@ -33,7 +58,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello ')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10)
+            output = described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10, time_zone: time_zone)
           }.to change{ described_class.count }.by(2)
 
           expect(output).to be_ok
@@ -70,7 +95,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10, time_zone: time_zone)
           }.not_to change{ described_class.count }
 
           expect(output).not_to be_ok
@@ -89,7 +114,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10, time_zone: time_zone)
           }.not_to change{ described_class.count }
 
           expect(output).to be_ok
@@ -116,7 +141,8 @@ module DelayHenka
             attribute_name: 'attr_chars',
             old_value: 'hello',
             new_value: 'world',
-            schedule_at: Time.current
+            schedule_at: Time.current,
+            time_zone: time_zone
           )
 
           expect{ record.apply_change }
@@ -133,7 +159,8 @@ module DelayHenka
             attribute_name: 'attr_chars',
             old_value: 'hello',
             new_value: '',
-            schedule_at: Time.current
+            schedule_at: Time.current,
+            time_zone: time_zone
           )
 
           expect{ record.apply_change }
@@ -152,7 +179,8 @@ module DelayHenka
             attribute_name: 'attr_chars',
             old_value: 'hello',
             new_value: '',
-            schedule_at: Time.current
+            schedule_at: Time.current,
+            time_zone: time_zone
           )
         end
 
@@ -167,7 +195,7 @@ module DelayHenka
 
     describe '#replace_change' do
       it 'updates state' do
-        record = described_class.create(changeable: Foo.create, submitted_by_id: 10, attribute_name: 'attr_chars', schedule_at: Time.current)
+        record = described_class.create(changeable: Foo.create, submitted_by_id: 10, attribute_name: 'attr_chars', schedule_at: Time.current, time_zone: time_zone)
         expect{ record.replace_change }.to change{ record.reload.state }
           .from(described_class::STATES[:STAGED])
           .to(described_class::STATES[:REPLACED])

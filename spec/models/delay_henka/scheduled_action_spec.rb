@@ -4,6 +4,27 @@ require 'rails_helper'
 module DelayHenka
   RSpec.describe ScheduledAction, type: :model do
 
+    describe 'attribues' do
+      let!(:record) { Foo.create(attr_chars: 'hello') }
+      let(:action) do
+        ScheduledAction.new(
+          actionable: record,
+          submitted_by_id: 10,
+          method_name: 'destroy',
+          schedule_at: 1.hour.ago,
+        )
+      end
+
+      it 'is invalid without a time_zone' do
+        expect(action).to_not be_valid
+      end
+
+      it 'is valid with a time zone' do
+        action.time_zone = "Central Time (US & Canada)"
+        expect(action).to be_valid
+      end
+    end
+
     describe '.schedule' do
       let!(:record) { Foo.create(attr_chars: 'hello') }
       let(:action) do
@@ -12,7 +33,8 @@ module DelayHenka
             record: record,
             method_name: method_name,
             by_id: 10,
-            argument: argument
+            argument: argument,
+            time_zone: "Central Time (US & Canada)"
           )
         end
       end
@@ -71,7 +93,8 @@ module DelayHenka
           submitted_by_id: 10,
           method_name: method_name,
           argument: argument,
-          schedule_at: Time.current
+          schedule_at: Time.current,
+          time_zone: "Central Time (US & Canada)"
         )
       end
 
