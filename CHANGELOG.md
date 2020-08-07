@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## Version 0.6.1
+## Version 0.6.2
 * require time_zone as parameter on schedule method for ScheduledChange and ScheduledAction.
 * Add time_zone to query inside ApplyActionsWorker and ApplyChangesWorker.
 * wrap ApplyActionsWorker and ApplyChangesWorker in UpdatesOnValidTimeZonesWorker.
