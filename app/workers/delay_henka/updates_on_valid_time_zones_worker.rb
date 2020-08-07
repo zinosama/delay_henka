@@ -4,7 +4,7 @@ module DelayHenka
     include Sidekiq::Worker
 
     def perform
-      ScheduledAction.pluck(:time_zone) + ScheduledChange.pluck(:time_zone).uniq.each do |time_zone|
+      ScheduledAction.staged.distinct.pluck(:time_zone) + ScheduledChange.staged.distinct.pluck(:time_zone).each do |time_zone|
         if valid_scheduling_time?(time_zone)
           ApplyActionsWorker.perform_async(time_zone)
           ApplyChangesWorker.perform_async(time_zone)
