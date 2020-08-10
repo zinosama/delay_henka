@@ -55,6 +55,9 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
+  # native rails support for manipulating time in tests
+  config.include ActiveSupport::Testing::TimeHelpers
+
   config.before(:each) do
     Sidekiq::Worker.clear_all
   end

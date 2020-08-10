@@ -9,13 +9,13 @@ module DelayHenka
 
     belongs_to :actionable, polymorphic: true
 
-    validates :submitted_by_id, :schedule_at, presence: true
+    validates :submitted_by_id, :schedule_at, :time_zone, presence: true
     validates :state, inclusion: { in: STATES.values }
     after_initialize :set_initial_state, if: :new_record?
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, method_name:, argument: nil, by_id:, schedule_at: Time.current, time_zone: nil)
+    def self.schedule(record:, method_name:, argument: nil, by_id:, schedule_at: Time.current, time_zone:)
       Keka.run do
         begin
           arity = record.method(method_name.to_sym).arity
