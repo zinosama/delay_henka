@@ -201,6 +201,5 @@ module DelayHenka
           .to(described_class::STATES[:REPLACED])
       end
     end
-
   end
 end

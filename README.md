@@ -35,7 +35,7 @@ class SomeController
     @product = SomeModel.find(params[:id])
     delayed_changes = some_params.extract!(:discount_pct, :price)
     if @product.update some_params.except(:discount_pct, :price)
-      result = DelayHenka::ScheduledChange.schedule(record: @product, changes: delayed_changes, by_id: current_user.id)
+      result = DelayHenka::ScheduledChange.schedule(record: @product, changes: delayed_changes, by_id: current_user.id, time_zone: Time.zone.name)
       if result.ok? # returns a Keka object
         redirect_to #..., success
       else
@@ -57,11 +57,12 @@ end
 # To view all scheduled changes, use this link:
 delay_henka.web_admin_scheduled_changes_path
 
-# To schedule the worker that applies all changes,
-# in your sidekiq config/schedule.yml,
-apply_scheduled_changes:
-  cron: "0 1 * * *"
-  class: DelayHenka::ApplyChangesWorker
+# To schedule the worker that applies all changes
+# and actions based on time zone, in your
+# sidekiq confiz/schedule.yml,
+apply_scheduled_changes_and_actions:
+  cron: "0 * * * *"
+  class: DelayHenka::UpdatesOnValidTimeZonesWorker
   queue: default
 ```
 
