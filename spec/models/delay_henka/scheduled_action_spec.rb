@@ -10,6 +10,7 @@ module DelayHenka
         ScheduledAction.new(
           actionable: record,
           submitted_by_id: 10,
+          submitted_by_email: 'tester@chowbus.com',
           method_name: 'destroy',
           schedule_at: 1.hour.ago,
         )
@@ -33,6 +34,7 @@ module DelayHenka
             record: record,
             method_name: method_name,
             by_id: 10,
+            by_email: 'tester@chowbus.com',
             argument: argument,
             time_zone: "Central Time (US & Canada)"
           )
@@ -80,6 +82,8 @@ module DelayHenka
           created = described_class.last
           expect(created.schedule_at).to be_present
           expect(created.method_name).to eq 'single_arity'
+          expect(created.submitted_by_id).to eq 10
+          expect(created.submitted_by_email).to eq 'tester@chowbus.com'
           expect(created.argument).to eq ['hello world'].to_json
         end
       end

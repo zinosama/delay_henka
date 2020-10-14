@@ -8,7 +8,7 @@ module DelayHenka
       let(:time_zone) { "Central Time (US & Canada)" }
 
       it 'executes action when schedule_at is in the past' do
-        ScheduledAction.schedule(record: actionable, by_id: 10, method_name: 'destroy', schedule_at: 1.hour.ago, time_zone: time_zone)
+        ScheduledAction.schedule(record: actionable, by_id: 10, by_email: 'tester@chowbus.com', method_name: 'destroy', schedule_at: 1.hour.ago, time_zone: time_zone)
         scheduled_action = ScheduledAction.last
 
         Sidekiq::Testing.inline! do
@@ -21,7 +21,7 @@ module DelayHenka
       end
 
       it 'does not execute action outside of a given time zone' do
-        ScheduledAction.schedule(record: actionable, by_id: 10, method_name: 'destroy', schedule_at: 1.hour.ago, time_zone: "Eastern Time (US & Canada)")
+        ScheduledAction.schedule(record: actionable, by_id: 10, by_email: 'tester@chowbus.com', method_name: 'destroy', schedule_at: 1.hour.ago, time_zone: "Eastern Time (US & Canada)")
         scheduled_action = ScheduledAction.last
 
         Sidekiq::Testing.inline! do
@@ -31,7 +31,7 @@ module DelayHenka
       end
 
       it 'does not execute action if schedule_at is in the future' do
-        ScheduledAction.schedule(record: actionable, by_id: 10, method_name: 'destroy', schedule_at: 1.hour.from_now, time_zone: time_zone)
+        ScheduledAction.schedule(record: actionable, by_id: 10, by_email: 'tester@chowbus.com', method_name: 'destroy', schedule_at: 1.hour.from_now, time_zone: time_zone)
         scheduled_action = ScheduledAction.last
 
         Sidekiq::Testing.inline! do

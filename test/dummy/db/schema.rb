@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_24_150636) do
+ActiveRecord::Schema.define(version: 2020_10_14_160730) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_150636) do
     t.datetime "updated_at", null: false
     t.string "time_zone"
     t.integer "service_region_id"
+    t.string "submitted_by_email"
     t.index ["actionable_type", "actionable_id"], name: "actionable_index"
     t.index ["schedule_at"], name: "index_delay_henka_scheduled_actions_on_schedule_at"
     t.index ["state"], name: "index_delay_henka_scheduled_actions_on_state"

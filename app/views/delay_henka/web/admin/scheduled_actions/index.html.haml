@@ -10,7 +10,9 @@
       %th Return Value
       %th Schedule At
       %th Time Zone
+      -# TODO-BAC-2434 remove when backfilled to submitted_by_email
       %th Submitted By
+      %th Submitted By Email
   %tbody
     - @actions.each do |action|
       %tr
@@ -22,4 +24,6 @@
         %td= action.return_value
         %td= action.schedule_at
         %td= action.time_zone
+        -# TODO-BAC-2434 remove when backfilled to submitted_by_email
         %td= action.submitted_by_id
+        %td= action.submitted_by_email
