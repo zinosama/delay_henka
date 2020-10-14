@@ -65,6 +65,6 @@ module DelayHenka
         end
       end
     end
-    
+
   end
 end
