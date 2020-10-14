@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_14_160730) do
+ActiveRecord::Schema.define(version: 2020_10_14_202401) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2020_10_14_160730) do
     t.string "method_name", null: false
     t.string "state", null: false
     t.string "error_message"
-    t.integer "submitted_by_id", null: false
+    t.integer "submitted_by_id"
     t.datetime "schedule_at", null: false
     t.jsonb "argument"
     t.jsonb "return_value"

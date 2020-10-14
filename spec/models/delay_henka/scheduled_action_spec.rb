@@ -9,20 +9,41 @@ module DelayHenka
       let(:action) do
         ScheduledAction.new(
           actionable: record,
-          submitted_by_id: 10,
           submitted_by_email: 'tester@chowbus.com',
           method_name: 'destroy',
           schedule_at: 1.hour.ago,
+          time_zone: 'Central Time (US & Canada)'
         )
       end
 
-      it 'is invalid without a time_zone' do
-        expect(action).to_not be_valid
+      it 'is valid' do
+        expect(action).to be_valid
       end
 
-      it 'is valid with a time zone' do
-        action.time_zone = "Central Time (US & Canada)"
-        expect(action).to be_valid
+      it 'is invalid without a time_zone' do
+        action.time_zone = nil
+        expect(action).not_to be_valid
+      end
+
+      describe '#submitted_by_*' do
+        it 'is invalid without `submitted_by_id` or `submitted_by_email`' do
+          action.submitted_by_id = nil
+          action.submitted_by_email = nil
+
+          expect(action).not_to be_valid
+        end
+
+        it 'is valid with `submitted_by_id` only' do
+          action.submitted_by_id = 10
+
+          expect(action).to be_valid
+        end
+
+        it 'is valid with `submitted_by_email` only' do
+          action.submitted_by_id = nil
+
+          expect(action).to be_valid
+        end
       end
     end
 
@@ -33,7 +54,6 @@ module DelayHenka
           described_class.schedule(
             record: record,
             method_name: method_name,
-            by_id: 10,
             by_email: 'tester@chowbus.com',
             argument: argument,
             time_zone: "Central Time (US & Canada)"
@@ -82,7 +102,6 @@ module DelayHenka
           created = described_class.last
           expect(created.schedule_at).to be_present
           expect(created.method_name).to eq 'single_arity'
-          expect(created.submitted_by_id).to eq 10
           expect(created.submitted_by_email).to eq 'tester@chowbus.com'
           expect(created.argument).to eq ['hello world'].to_json
         end
@@ -94,7 +113,7 @@ module DelayHenka
       let!(:scheduled_action) do
         described_class.create(
           actionable: actionable,
-          submitted_by_id: 10,
+          submitted_by_email: 'tester@chowbus.com',
           method_name: method_name,
           argument: argument,
           schedule_at: Time.current,
