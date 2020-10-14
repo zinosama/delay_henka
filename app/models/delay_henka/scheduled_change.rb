@@ -10,14 +10,16 @@ module DelayHenka
 
     belongs_to :changeable, polymorphic: true
 
-    validates :submitted_by_id, :attribute_name, presence: true
+    validates :submitted_by_email, presence: true, unless: :submitted_by_id
+
+    validates :attribute_name, presence: true
     validates :schedule_at, :time_zone, presence: true
     validates :state, inclusion: { in: STATES.values }
     after_initialize :set_initial_state, if: :new_record?
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, changes:, by_id:, schedule_at: Time.current, time_zone:)
+    def self.schedule(record:, changes:, by_email:, schedule_at: Time.current, time_zone:)
       Keka.run do
         service = WhetherSchedule.new(record)
         new_changes = changes.each_with_object([]) do |(attribute, new_val), accum|
@@ -27,7 +29,7 @@ module DelayHenka
           if decision.ok?
             accum << new(
               changeable: record,
-              submitted_by_id: by_id,
+              submitted_by_email: by_email,
               attribute_name: attribute,
               old_value: old_val,
               new_value: cleaned_new_val,

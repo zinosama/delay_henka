@@ -9,21 +9,43 @@ module DelayHenka
       let(:record) do
         described_class.new(
           changeable: changeable,
-          submitted_by_id: 10,
+          submitted_by_email: 'tester@chowbus.com',
           attribute_name: 'attr_chars',
           old_value: 'hello',
           new_value: '',
-          schedule_at: Time.current
+          schedule_at: Time.current,
+          time_zone: 'Central Time (US & Canada)'
         )
       end
 
-      it 'is invalid without a time_zone' do
-        expect(record).to_not be_valid
+      it 'is valid' do
+        expect(record).to be_valid
       end
 
-      it 'is valid with a time zone' do
-        record.time_zone = "Central Time (US & Canada)"
-        expect(record).to be_valid
+      it 'is invalid without a time_zone' do
+        record.time_zone = nil
+        expect(record).not_to be_valid
+      end
+
+      describe '#submitted_by_*' do
+        it 'is invalid without `submitted_by_id` or `submitted_by_email`' do
+          record.submitted_by_id = nil
+          record.submitted_by_email = nil
+
+          expect(record).not_to be_valid
+        end
+
+        it 'is valid with `submitted_by_id` only' do
+          record.submitted_by_id = 10
+
+          expect(record).to be_valid
+        end
+
+        it 'is valid with `submitted_by_email` only' do
+          record.submitted_by_id = nil
+
+          expect(record).to be_valid
+        end
       end
     end
 
@@ -41,14 +63,14 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: { attr_chars: 'world' }, by_id: 10, time_zone: time_zone)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: 'world' }, by_email: 'tester@chowbus.com', time_zone: time_zone)
           }.to change{ described_class.count }.by(1)
 
           expect(output).to be_ok
 
           created = described_class.last
           expect(created.changeable).to eq(changeable)
-          expect(created.submitted_by_id).to eq 10
+          expect(created.submitted_by_email).to eq 'tester@chowbus.com'
           expect(created.attribute_name).to eq 'attr_chars'
           expect(created.old_value).to eq 'hello'
           expect(created.new_value).to eq 'world'
@@ -58,7 +80,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello ')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_id: 10, time_zone: time_zone)
+            output = described_class.schedule(record: changeable, changes: {attr_chars: 'world', attr_int: '12'}, by_email: 'tester@chowbus.com', time_zone: time_zone)
           }.to change{ described_class.count }.by(2)
 
           expect(output).to be_ok
@@ -67,14 +89,14 @@ module DelayHenka
           expect(created).to contain_exactly(
             have_attributes(
               changeable: changeable,
-              submitted_by_id: 10,
+              submitted_by_email: 'tester@chowbus.com',
               attribute_name: 'attr_chars',
               old_value: 'hello ',
               new_value: 'world',
             ),
             have_attributes(
               changeable: changeable,
-              submitted_by_id: 10,
+              submitted_by_email: 'tester@chowbus.com',
               attribute_name: 'attr_int',
               old_value: nil,
               new_value: '12',
@@ -95,7 +117,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10, time_zone: time_zone)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_email: 'tester@chowbus.com', time_zone: time_zone)
           }.not_to change{ described_class.count }
 
           expect(output).not_to be_ok
@@ -114,7 +136,7 @@ module DelayHenka
           changeable = Foo.create(attr_chars: 'hello')
           output = nil
           expect{
-            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_id: 10, time_zone: time_zone)
+            output = described_class.schedule(record: changeable, changes: { attr_chars: '' }, by_email: 'tester@chowbus.com', time_zone: time_zone)
           }.not_to change{ described_class.count }
 
           expect(output).to be_ok
@@ -138,6 +160,7 @@ module DelayHenka
           record = described_class.create!(
             changeable: changeable,
             submitted_by_id: 10,
+            submitted_by_email: 'tester@chowbus.com',
             attribute_name: 'attr_chars',
             old_value: 'hello',
             new_value: 'world',

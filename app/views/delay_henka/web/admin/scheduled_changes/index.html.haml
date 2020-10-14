@@ -10,7 +10,9 @@
       %th New Value
       %th Schedule At
       %th Time Zone
+      -# TODO-BAC-2434 remove when backfilled to submitted_by_email
       %th Submitted By
+      %th Submitted By Email
   %tbody
     - @changes.each do |change|
       %tr
@@ -22,4 +24,6 @@
         %td= change.new_value
         %td= change.schedule_at
         %td= change.time_zone
+        -# TODO-BAC-2434 remove when backfilled to submitted_by_email
         %td= change.submitted_by_id
+        %td= change.submitted_by_email
