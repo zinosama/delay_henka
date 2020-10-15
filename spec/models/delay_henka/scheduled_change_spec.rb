@@ -33,8 +33,8 @@ module DelayHenka
         before do
           service = instance_double(WhetherSchedule)
           allow(WhetherSchedule).to receive(:new).and_return(service)
-          allow(service).to receive(:make_decision).with(:attr_chars, 'world').and_return(Keka.ok)
-          allow(service).to receive(:make_decision).with(:attr_int, '12').and_return(Keka.ok)
+          allow(service).to receive(:make_decision).with(:attr_chars, 'world').and_return(Keka.ok_result)
+          allow(service).to receive(:make_decision).with(:attr_int, '12').and_return(Keka.ok_result)
         end
 
         it 'creates singular scheduled change' do
@@ -88,7 +88,7 @@ module DelayHenka
           service = instance_double(WhetherSchedule)
           allow(WhetherSchedule).to receive(:new).and_return(service)
           allow(service).to receive(:make_decision).with(:attr_chars, nil)
-            .and_return(Keka.err(:some_record))
+            .and_return(Keka.err_result(:some_record))
         end
 
         it 'returns error keka' do
@@ -107,7 +107,7 @@ module DelayHenka
         before do
           service = instance_double(WhetherSchedule)
           allow(WhetherSchedule).to receive(:new).and_return(service)
-          allow(service).to receive(:make_decision).with(:attr_chars, nil).and_return(Keka.err)
+          allow(service).to receive(:make_decision).with(:attr_chars, nil).and_return(Keka.err_result)
         end
 
         it 'returns ok keka' do
