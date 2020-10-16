@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_24_150636) do
+ActiveRecord::Schema.define(version: 2020_10_14_210824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_150636) do
     t.string "method_name", null: false
     t.string "state", null: false
     t.string "error_message"
-    t.integer "submitted_by_id", null: false
+    t.integer "submitted_by_id"
     t.datetime "schedule_at", null: false
     t.jsonb "argument"
     t.jsonb "return_value"
@@ -29,6 +29,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_150636) do
     t.datetime "updated_at", null: false
     t.string "time_zone"
     t.integer "service_region_id"
+    t.string "submitted_by_email"
     t.index ["actionable_type", "actionable_id"], name: "actionable_index"
     t.index ["schedule_at"], name: "index_delay_henka_scheduled_actions_on_schedule_at"
     t.index ["state"], name: "index_delay_henka_scheduled_actions_on_state"
@@ -39,7 +40,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_150636) do
     t.string "changeable_type", null: false
     t.integer "changeable_id", null: false
     t.string "attribute_name", null: false
-    t.integer "submitted_by_id", null: false
+    t.integer "submitted_by_id"
     t.string "state", null: false
     t.text "error_message"
     t.jsonb "old_value"
@@ -49,6 +50,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_150636) do
     t.datetime "schedule_at", null: false
     t.string "time_zone"
     t.integer "service_region_id"
+    t.string "submitted_by_email"
     t.index ["time_zone"], name: "index_delay_henka_scheduled_changes_on_time_zone"
   end
 
