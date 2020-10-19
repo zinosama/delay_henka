@@ -1,5 +1,8 @@
 module DelayHenka
   class ScheduledChange < ApplicationRecord
+    self.ignored_columns = %w(
+      submitted_by_id
+    )
 
     STATES = {
       STAGED: 'staged',
@@ -10,9 +13,7 @@ module DelayHenka
 
     belongs_to :changeable, polymorphic: true
 
-    validates :submitted_by_email, presence: true, unless: :submitted_by_id
-
-    validates :attribute_name, presence: true
+    validates :submitted_by_email, :attribute_name, presence: true
     validates :schedule_at, :time_zone, presence: true
     validates :state, inclusion: { in: STATES.values }
     after_initialize :set_initial_state, if: :new_record?

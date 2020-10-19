@@ -25,25 +25,10 @@ module DelayHenka
         expect(action).not_to be_valid
       end
 
-      describe '#submitted_by_*' do
-        it 'is invalid without `submitted_by_id` or `submitted_by_email`' do
-          action.submitted_by_id = nil
-          action.submitted_by_email = nil
+      it 'is invalid without `submitted_by_email`' do
+        action.submitted_by_email = nil
 
-          expect(action).not_to be_valid
-        end
-
-        it 'is valid with `submitted_by_id` only' do
-          action.submitted_by_id = 10
-
-          expect(action).to be_valid
-        end
-
-        it 'is valid with `submitted_by_email` only' do
-          action.submitted_by_id = nil
-
-          expect(action).to be_valid
-        end
+        expect(action).not_to be_valid
       end
     end
 
