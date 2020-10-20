@@ -27,25 +27,10 @@ module DelayHenka
         expect(record).not_to be_valid
       end
 
-      describe '#submitted_by_*' do
-        it 'is invalid without `submitted_by_id` or `submitted_by_email`' do
-          record.submitted_by_id = nil
-          record.submitted_by_email = nil
+      it 'is invalid without `submitted_by_email`' do
+        record.submitted_by_email = nil
 
-          expect(record).not_to be_valid
-        end
-
-        it 'is valid with `submitted_by_id` only' do
-          record.submitted_by_id = 10
-
-          expect(record).to be_valid
-        end
-
-        it 'is valid with `submitted_by_email` only' do
-          record.submitted_by_id = nil
-
-          expect(record).to be_valid
-        end
+        expect(record).not_to be_valid
       end
     end
 
@@ -159,7 +144,6 @@ module DelayHenka
         it 'updates state to success' do
           record = described_class.create!(
             changeable: changeable,
-            submitted_by_id: 10,
             submitted_by_email: 'tester@chowbus.com',
             attribute_name: 'attr_chars',
             old_value: 'hello',
@@ -178,7 +162,7 @@ module DelayHenka
         it 'updates state to errored and sets error message' do
           record = described_class.create!(
             changeable: changeable,
-            submitted_by_id: 10,
+            submitted_by_email: 'tester@chowbus.com',
             attribute_name: 'attr_chars',
             old_value: 'hello',
             new_value: '',
@@ -198,7 +182,7 @@ module DelayHenka
         let!(:record) do
           described_class.create!(
             changeable: changeable,
-            submitted_by_id: 10,
+            submitted_by_email: 'tester@chowbus.com',
             attribute_name: 'attr_chars',
             old_value: 'hello',
             new_value: '',
@@ -218,7 +202,13 @@ module DelayHenka
 
     describe '#replace_change' do
       it 'updates state' do
-        record = described_class.create(changeable: Foo.create, submitted_by_id: 10, attribute_name: 'attr_chars', schedule_at: Time.current, time_zone: time_zone)
+        record = described_class.create(
+          changeable: Foo.create,
+          submitted_by_email: 'tester@chowbus.com',
+          attribute_name: 'attr_chars',
+          schedule_at: Time.current,
+          time_zone: time_zone
+        )
         expect{ record.replace_change }.to change{ record.reload.state }
           .from(described_class::STATES[:STAGED])
           .to(described_class::STATES[:REPLACED])
