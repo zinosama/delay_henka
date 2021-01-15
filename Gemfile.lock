@@ -3,7 +3,7 @@ PATH
   specs:
     delay_henka (0.7.1)
       haml (> 5)
-      keka (~> 0.3.0)
+      keka (>= 0.3)
       rails (> 5.2)
       sidekiq (> 5)
 
