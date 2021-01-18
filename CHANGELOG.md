@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## Version 0.7.2
+
+* Change Keka dependency to usе less strict version
+
 ## Version 0.7.1
 
 * Cleanup `ScheduledAction#submitted_by_id` and `ScheduledChange#submitted_by_id` fallbacks
