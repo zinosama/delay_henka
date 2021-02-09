@@ -59,7 +59,7 @@ delay_henka.web_admin_scheduled_changes_path
 
 # To schedule the worker that applies all changes
 # and actions based on time zone, in your
-# sidekiq confiz/schedule.yml,
+# sidekiq config/schedule.yml,
 apply_scheduled_changes_and_actions:
   cron: "0 * * * *"
   class: DelayHenka::UpdatesOnValidTimeZonesWorker
