@@ -35,7 +35,13 @@ class SomeController
     @product = SomeModel.find(params[:id])
     delayed_changes = some_params.extract!(:discount_pct, :price)
     if @product.update some_params.except(:discount_pct, :price)
-      result = DelayHenka::ScheduledChange.schedule(record: @product, changes: delayed_changes, by_email: current_user.email, time_zone: Time.zone.name)
+      result = DelayHenka::ScheduledChange.schedule(
+        record: @product,
+        changes: delayed_changes,
+        by_email: current_user.email,
+        time_zone: Time.zone.name,
+        schedule_at: 7.hours.from_now,
+      )
       if result.ok? # returns a Keka object
         redirect_to #..., success
       else

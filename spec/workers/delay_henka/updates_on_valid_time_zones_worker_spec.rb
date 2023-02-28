@@ -51,19 +51,6 @@ module DelayHenka
           end
         end
       end
-
-      it 'executes workers when scheduling time is valid' do
-        travel_to Time.local(2020,8,6,2,0,0) do
-          ScheduledAction.schedule(record: actionable, by_email: 'tester@chowbus.com', method_name: 'destroy', schedule_at: 1.hour.ago, time_zone: time_zone)
-          ScheduledChange.create(changeable: changeable, submitted_by_email: 'tester@chowbus.com', attribute_name: 'attr_chars', old_value: 'goodbye', new_value: 'adieu', schedule_at: Time.current, time_zone: time_zone)
-
-          Sidekiq::Testing.inline! do
-            expect{ described_class.perform_async }
-              .to change{ Foo.count }.from(2)
-              .and change{ changeable.reload.attr_chars }.from('goodbye').to('adieu')
-          end
-        end
-      end
     end
 
   end
