@@ -20,7 +20,7 @@ module DelayHenka
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, changes:, by_email:, schedule_at: Time.current, time_zone:)
+    def self.schedule(record:, changes:, by_email:, schedule_at:, time_zone:)
       Keka.run do
         service = WhetherSchedule.new(record)
         new_changes = changes.each_with_object([]) do |(attribute, new_val), accum|

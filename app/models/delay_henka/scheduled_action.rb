@@ -18,7 +18,7 @@ module DelayHenka
 
     scope :staged, -> { where(state: STATES[:STAGED]) }
 
-    def self.schedule(record:, method_name:, argument: nil, by_email:, schedule_at: Time.current, time_zone:)
+    def self.schedule(record:, method_name:, argument: nil, by_email:, schedule_at:, time_zone:)
       Keka.run do
         begin
           arity = record.method(method_name.to_sym).arity
