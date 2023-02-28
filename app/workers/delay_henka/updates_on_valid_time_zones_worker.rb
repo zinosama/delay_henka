@@ -2,7 +2,6 @@ module DelayHenka
   class UpdatesOnValidTimeZonesWorker
 
     include Sidekiq::Worker
-    VALID_HOURS = %w(1 2 3).freeze
 
     def perform
       (ScheduledAction.staged.distinct.pluck(:time_zone) + ScheduledChange.staged.distinct.pluck(:time_zone)).uniq.each do |time_zone|
@@ -17,7 +16,6 @@ module DelayHenka
 
     def valid_scheduling_time?(time_zone)
       return false unless Time.find_zone(time_zone)
-      VALID_HOURS.include? Time.current.in_time_zone(time_zone).hour.to_s
     end
   end
 end
